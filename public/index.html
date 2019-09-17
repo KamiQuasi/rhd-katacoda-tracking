@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Firebase Hosting</title>
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/6.6.0/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/6.6.0/firebase-firestore.js"></script>
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script defer src="/__/firebase/init.js"></script>
+
+    <style media="screen">
+      body { color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+      #cont { overflow:hidden; position: relative; padding-top: 75%;}
+      #cont iframe {
+        height: 100%;
+        max-height: 100%;
+        width: 100%;
+        border: 0;
+        left: 0;
+        top: 0;
+        background-color: transparent;
+        position: absolute;
+      }
+      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+    </style>
+  </head>
+  <body>
+      <div id="display">
+        <h2>Totals</h2>
+        <ul>
+          <li>Users: <span id="total-users"></span></li>
+          <li>Courses: <span id="total-courses"></span></li>
+          <li>Steps: <span id="total-steps"></span></li>
+          <li>Avg Time: <span id="avg-time"></span></li>
+          <li>Total Completions (Reached "Finish"): <span id="total-complete"></span></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Locations</h2>
+        <ul id="locations">
+
+        </ul>
+      </div>
+      <div>
+          <h2>Courses</h2>
+          <ul id="courses">
+              
+          </ul>
+      </div>
+    <script src="KatacodaData.js"></script>
+  </body>
+</html>
