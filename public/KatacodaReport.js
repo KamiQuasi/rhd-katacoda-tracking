@@ -1,56 +1,56 @@
 "use strict";
 const dateList = [
-    // '2020-06-01', 
-    // '2020-06-02', 
-    // '2020-06-03', 
-    // '2020-06-04', 
-    // '2020-06-05', 
-    // '2020-06-06', 
-    // '2020-06-07', 
-    // '2020-06-08', 
-    // '2020-06-09', 
-    // '2020-06-10', 
-    // '2020-06-11', 
-    // '2020-06-12', 
-    // '2020-06-13', 
-    // '2020-06-14', 
-    // '2020-06-15', 
-    // '2020-06-16', 
-    // '2020-06-17', 
-    // '2020-06-18', 
-    // '2020-06-19', 
-    // '2020-06-20', 
-    // '2020-06-21', 
-    // '2020-06-22', 
-    // '2020-06-23', 
-    // '2020-06-24', 
-    // '2020-06-25', 
-    // '2020-06-26', 
-    // '2020-06-27', 
-    // '2020-06-28', 
-    // '2020-06-29', 
-    // '2020-06-30',
-    // '2020-07-01', 
-    // '2020-07-02',
-    // '2020-07-03',
-    // '2020-07-04',
-    // '2020-07-05',
-    // '2020-07-06',
-    // '2020-07-07',
-    // '2020-07-08',
-    // '2020-07-09',
-    // '2020-07-10',
-    // '2020-07-11',
-    // '2020-07-12',
-    // '2020-07-13',
-    // '2020-07-14',
-    // '2020-07-15',
-    // '2020-07-16',
-    // '2020-07-17',
-    // '2020-07-18',
-    // '2020-07-19',
-    // '2020-07-20',
-    // '2020-07-21',
+    '2020-06-01',
+    '2020-06-02',
+    '2020-06-03',
+    '2020-06-04',
+    '2020-06-05',
+    '2020-06-06',
+    '2020-06-07',
+    '2020-06-08',
+    '2020-06-09',
+    '2020-06-10',
+    '2020-06-11',
+    '2020-06-12',
+    '2020-06-13',
+    '2020-06-14',
+    '2020-06-15',
+    '2020-06-16',
+    '2020-06-17',
+    '2020-06-18',
+    '2020-06-19',
+    '2020-06-20',
+    '2020-06-21',
+    '2020-06-22',
+    '2020-06-23',
+    '2020-06-24',
+    '2020-06-25',
+    '2020-06-26',
+    '2020-06-27',
+    '2020-06-28',
+    '2020-06-29',
+    '2020-06-30',
+    '2020-07-01',
+    '2020-07-02',
+    '2020-07-03',
+    '2020-07-04',
+    '2020-07-05',
+    '2020-07-06',
+    '2020-07-07',
+    '2020-07-08',
+    '2020-07-09',
+    '2020-07-10',
+    '2020-07-11',
+    '2020-07-12',
+    '2020-07-13',
+    '2020-07-14',
+    '2020-07-15',
+    '2020-07-16',
+    '2020-07-17',
+    '2020-07-18',
+    '2020-07-19',
+    '2020-07-20',
+    '2020-07-21',
     '2020-07-22',
     '2020-07-23',
 ];
@@ -65,27 +65,47 @@ class KatacodaReport extends HTMLElement {
         this.totals = [];
         this.courses = [];
         this.locations = [];
-        this._data = {};
-        this.template = `<h1>TEST</h1>`;
-        dateList.map(val => {
-            courses.map(course => {
-                firebase.firestore().collection(val).get().then(querySnapshot => {
-                    querySnapshot.forEach(doc => {
-                        if (doc.id === course.key) {
-                            this.data[course.id] = this.data[course.id] || {};
-                            this.data[course.id]['name'] = course.name;
-                            this.data[course.id][val] = doc.data();
+        this.data = {};
+        this.template = `<h1>Katacoda Data</h1>
+    ${courses.reduce((acc, c) => `${acc}<section>
+    <h2>${c.name}</h2>
+    <table id="${c.id}">
+    <tr><th>Date</th><th>Complete</th><th span="10">|Steps(users)|</th></table>
+    </section>`, '')}`;
+        dateList.map(dt => {
+            firebase.firestore().collection(dt).doc('courses').get().then(doc => {
+                if (doc.exists) {
+                    courses.map(course => {
+                        let data = doc.data();
+                        if (data[course.key]) {
+                            let complete = typeof data[course.key]['complete'] !== 'undefined' ? data[course.key]['complete'] : 0;
+                            let labels = [];
+                            if (data[course.key]['labels']) {
+                                Object.entries(data[course.key]['labels']).forEach(entry => {
+                                    let k = entry[0];
+                                    let v = entry[1];
+                                    labels.push(`|${k}(${v['total'] || ''})|`);
+                                    labels.push(v['time']);
+                                    //labels.push(`${v['time'] ? v['time'].reduce((a,c) => `${a}${c},`,''):''}`);
+                                });
+                            }
+                            let row = document.createElement('tr');
+                            row.innerHTML = `<td>${dt}</td><td>${complete}</td>${labels.reduce((a, c) => `${a}<td>${c}</td>`, '')}`;
+                            let courseTbl = document.querySelector('#' + course.id);
+                            if (courseTbl) {
+                                courseTbl.appendChild(row);
+                            }
                         }
                     });
-                });
+                }
+                else {
+                    // doc.data() will be undefined in this case
+                    console.log("No such document!");
+                }
+            }).catch(function (error) {
+                console.log("Error getting document:", error);
             });
         });
-    }
-    get data() {
-        return this._data;
-    }
-    set data(val) {
-        this._data;
     }
     // static observedAttributes() { return ['url']; }
     // attributeChangedCallback(attr, newVal, oldVal) {
